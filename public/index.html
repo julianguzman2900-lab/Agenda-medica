@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Médica Virtual - Reservas</title>
+  <link rel="stylesheet" href="/estilos_css/agenda.css">
+  <style>
+    /* Estilos adicionales específicos para el calendario semanal y las vistas */
+    .calendar-week-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .calendar-day-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 1rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .calendar-day-card:hover:not(.disabled) {
+      border-color: var(--accent-color);
+      background: rgba(59, 130, 246, 0.1);
+    }
+    .calendar-day-card.selected {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      color: white;
+    }
+    .calendar-day-card.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .calendar-day-card .day-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .calendar-day-card .day-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .calendar-day-card.selected .day-date {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .week-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .week-nav button {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .week-nav button:hover {
+      background: var(--accent-color);
+    }
+    .resumen-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .resumen-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      animation: fadeInUp 0.4s ease-out;
+    }
+    .tab-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .tab-btn.active {
+      color: #60a5fa;
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #60a5fa;
+    }
+    .auth-toggle {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .history-card {
+      margin-top: 2rem;
+    }
+    .diagnostico-box {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid var(--warning-color);
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 600px) {
+      .calendar-week-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Agenda Médica Virtual</h1>
+    <p>Reserve su cita médica en pocos pasos con nuestros especialistas</p>
+  </header>
+
+  <div class="container">
+    <!-- Notificaciones dinámicas -->
+    <div id="notification" class="notification"></div>
+
+    <!-- VISTA 1: Autenticación de Paciente (Login y Registro) -->
+    <div class="card" id="authSection">
+      <div class="tab-container">
+        <button class="tab-btn active" id="tabLoginBtn">Iniciar Sesión</button>
+        <button class="tab-btn" id="tabRegistroBtn">Crear Cuenta</button>
+      </div>
+
+      <!-- Formulario Login -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginCorreo">Correo Electrónico</label>
+          <input type="email" id="loginCorreo" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="form-group">
+          <label for="loginContrasena">Contraseña</label>
+          <input type="password" id="loginContrasena" placeholder="Ingrese su contraseña" required>
+        </div>
+        <button type="submit" class="btn" style="margin-top: 1rem;">Ingresar a la Agenda</button>
+      </form>
+
+      <!-- Formulario Registro (Oculto al inicio) -->
+      <form id="registroForm" style="display: none;">
+        <div class="form-group">
+          <label for="regNombre">Nombre Completo</label>
+          <input type="text" id="regNombre" placeholder="Ej. Juan Pérez" required>
+        </div>
+        <div class="form-group">
+          <label for="regCorreo">Correo Electrónico</label>
+          <input type="email" id="regCorreo" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="form-group">
+          <label for="regContrasena">Contraseña</label>
+          <input type="password" id="regContrasena" placeholder="Cree una contraseña" required>
+        </div>
+        <button type="submit" class="btn" style="margin-top: 1rem;">Registrar Cuenta</button>
+      </form>
+
+      <div class="auth-toggle">
+        ¿Eres médico? <a href="/panel.html" class="nav-link">Ingresa aquí al Panel Médico →</a>
+      </div>
+    </div>
+
+    <!-- VISTA 2: Aplicación Principal de Citas (Oculta al inicio) -->
+    <div id="mainAppSection" style="display: none;">
+      
+      <!-- Barra de información de sesión de paciente -->
+      <div class="doctor-info-bar">
+        <div>
+          <span style="font-weight: 600; color: #60a5fa;" id="infoPacienteNombre">Paciente</span> | 
+          <span style="color: var(--text-muted);" id="infoPacienteCorreo">correo@ejemplo.com</span>
+        </div>
+        <button class="logout-btn" id="logoutPacienteBtn">Cerrar Sesión</button>
+      </div>
+
+      <!-- Card para agendar cita -->
+      <div class="card">
+        <h2>Agendar Nueva Cita Médica</h2>
+
+        <form id="reservaForm" novalidate>
+          <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 1.1rem;">1. Datos Personales</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombrePaciente">Nombre Completo del Paciente</label>
+              <input type="text" id="nombrePaciente" required>
+            </div>
+            <div class="form-group">
+              <label for="edadPaciente">Edad</label>
+              <input type="number" id="edadPaciente" min="0" max="120" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="correoPaciente">Correo Electrónico de Contacto</label>
+              <input type="email" id="correoPaciente" required readonly>
+            </div>
+            <div class="form-group">
+              <label for="telefonoPaciente">Teléfono de Contacto</label>
+              <input type="tel" id="telefonoPaciente" placeholder="Ej. 3001234567" required>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-muted); font-size: 1.1rem;">2. Selección de Especialidad y Fecha</h3>
+
+          <div class="form-group">
+            <label for="especialidad">Especialidad Médica (Solo 5 disponibles)</label>
+            <select id="especialidad" required>
+              <option value="" disabled selected>Seleccione especialidad...</option>
+              <option value="Pediatría">Pediatría</option>
+              <option value="Cardiología">Cardiología</option>
+              <option value="Dermatología">Dermatología</option>
+              <option value="Ginecología">Ginecología</option>
+              <option value="Traumatología">Traumatología</option>
+            </select>
+          </div>
+
+          <!-- Calendario Semanal Grande -->
+          <div class="form-group" style="margin-top: 1.5rem;">
+            <label>Seleccione el Día de la Cita (Lunes a Viernes)</label>
+            
+            <div class="week-nav">
+              <button type="button" id="prevWeekBtn">← Semana Anterior</button>
+              <span id="weekLabel" style="font-weight: 600; color: #60a5fa;">Semana Actual</span>
+              <button type="button" id="nextWeekBtn">Semana Siguiente →</button>
+            </div>
+
+            <div id="calendarWeekGrid" class="calendar-week-grid">
+              <!-- Renderizado dinámico de los 5 días laborales -->
+            </div>
+          </div>
+
+          <!-- Selector de bloques horarios -->
+          <div class="form-group" id="horasSeccion" style="display: none; margin-top: 1.5rem;">
+            <label>Bloques Horarios Disponibles (Límite: 5 citas al día por doctor)</label>
+            <div id="horasGrid" class="hours-grid">
+              <!-- Renderizado de horas libres -->
+            </div>
+            <p id="horasMensaje" style="color: var(--warning-color); font-size: 0.9rem; margin-top: 0.5rem; display: none;"></p>
+          </div>
+
+          <button type="submit" class="btn" style="margin-top: 2rem;">Confirmar y Agendar Cita</button>
+        </form>
+      </div>
+
+      <!-- Sección de Historial de Citas del Paciente -->
+      <div class="card history-card">
+        <h2>Historial de Consultas Médicas</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha / Hora</th>
+                <th>Especialidad</th>
+                <th>Estado</th>
+                <th>Información de la Consulta</th>
+              </tr>
+            </thead>
+            <tbody id="historialPacienteBody">
+              <!-- Renderizado dinámico de citas e historial -->
+            </tbody>
+          </table>
+        </div>
+        <div id="sinHistorialMensaje" style="text-align: center; padding: 2rem; color: var(--text-muted); display: none;">
+          Aún no tiene citas médicas registradas en su historial.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE RESUMEN DE LA CITA CREADA -->
+  <div class="resumen-modal" id="resumenModal">
+    <div class="resumen-content">
+      <h2 style="color: var(--success-color); border: none; margin-bottom: 1rem;">✓ ¡Cita Agendada con Éxito!</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">A continuación se detalla el resumen de su reservación médica:</p>
+      
+      <div style="background: rgba(15,23,42,0.4); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; line-height: 1.8;">
+        <div><strong>Paciente:</strong> <span id="resumenPaciente"></span></div>
+        <div><strong>Especialidad:</strong> <span id="resumenEspecialidad"></span></div>
+        <div><strong>Doctor:</strong> <span id="resumenDoctor"></span></div>
+        <div><strong>Fecha:</strong> <span id="resumenFecha"></span></div>
+        <div><strong>Hora:</strong> <span id="resumenHora"></span></div>
+      </div>
+
+      <button type="button" class="btn" id="cerrarResumenBtn">Entendido / Cerrar</button>
+    </div>
+  </div>
+
+  <script src="/agendaApp.js"></script>
+</body>
+</html>

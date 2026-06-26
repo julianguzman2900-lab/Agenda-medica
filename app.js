@@ -32,7 +32,7 @@ app.get('/panel', (req, res) => {
 // 4. Servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor en ejecución sobre el puerto ${PORT}`);
+  console.log(`[Centro Médico Guzmán] Servidor en ejecución sobre el puerto ${PORT}`);
   console.log(`Acceso cliente paciente: http://localhost:${PORT}`);
   console.log(`Acceso panel de doctores: http://localhost:${PORT}/panel.html`);
 });

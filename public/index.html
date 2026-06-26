@@ -3,152 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agenda Médica Virtual - Reservas</title>
+  <meta name="description" content="Reserve su cita médica en línea con los especialistas del Centro Médico Guzmán. Pediatría, Cardiología, Dermatología, Ginecología y Traumatología.">
+  <title>Centro Médico Guzmán - Reservas</title>
+  <!-- Google Fonts (como <link> en lugar de @import para mejor rendimiento) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/estilos_css/agenda.css">
-  <style>
-    /* Estilos adicionales específicos para el calendario semanal y las vistas */
-    .calendar-week-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.75rem;
-      margin: 1.5rem 0;
-    }
-    .calendar-day-card {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      padding: 1rem 0.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .calendar-day-card:hover:not(.disabled) {
-      border-color: var(--accent-color);
-      background: rgba(59, 130, 246, 0.1);
-    }
-    .calendar-day-card.selected {
-      background: var(--accent-color);
-      border-color: var(--accent-color);
-      color: white;
-    }
-    .calendar-day-card.disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-    .calendar-day-card .day-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-    .calendar-day-card .day-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .calendar-day-card.selected .day-date {
-      color: rgba(255, 255, 255, 0.8);
-    }
-    .week-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .week-nav button {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid var(--glass-border);
-      color: var(--text-main);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .week-nav button:hover {
-      background: var(--accent-color);
-    }
-    .resumen-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .resumen-content {
-      background: var(--bg-secondary);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      max-width: 500px;
-      width: 100%;
-      padding: 2rem;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      animation: fadeInUp 0.4s ease-out;
-    }
-    .tab-container {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding-bottom: 0.5rem;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    .tab-btn.active {
-      color: #60a5fa;
-    }
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -0.5rem;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #60a5fa;
-    }
-    .auth-toggle {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-    .history-card {
-      margin-top: 2rem;
-    }
-    .diagnostico-box {
-      background: rgba(245, 158, 11, 0.1);
-      border-left: 3px solid var(--warning-color);
-      padding: 0.75rem;
-      border-radius: 4px;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-    }
-    @media (max-width: 600px) {
-      .calendar-week-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-  </style>
 </head>
 <body>
 
   <header>
-    <h1>Agenda Médica Virtual</h1>
+    <h1>Centro Médico Guzmán</h1>
     <p>Reserve su cita médica en pocos pasos con nuestros especialistas</p>
   </header>
 
@@ -277,7 +143,7 @@
             <p id="horasMensaje" style="color: var(--warning-color); font-size: 0.9rem; margin-top: 0.5rem; display: none;"></p>
           </div>
 
-          <button type="submit" class="btn" style="margin-top: 2rem;">Confirmar y Agendar Cita</button>
+          <button type="submit" class="btn" id="btnReservar" style="margin-top: 2rem;">Confirmar y Agendar Cita</button>
         </form>
       </div>
 

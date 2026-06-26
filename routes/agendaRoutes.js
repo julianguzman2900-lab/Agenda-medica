@@ -9,14 +9,17 @@ router.post('/auth/doctor', autenticacionController.loginDoctor);
 router.post('/auth/paciente/registro', autenticacionController.registrarPaciente);
 router.post('/auth/paciente/login', autenticacionController.loginPaciente);
 
-// 2. Disponibilidad
+// 2. Doctores disponibles (para el frontend — evita datos hardcodeados en el cliente)
+router.get('/doctores', citaController.obtenerDoctores);
+
+// 3. Disponibilidad de horas
 router.get('/disponibilidad', citaController.obtenerHorasDisponibles);
 
-// 3. Gestión de Citas (Pacientes)
+// 4. Gestión de Citas (Pacientes)
 router.post('/citas', citaController.crearCita);
 router.get('/citas/paciente/:correo', citaController.obtenerHistorialPaciente);
 
-// 4. Gestión de Citas (Doctores)
+// 5. Gestión de Citas (Doctores)
 router.get('/citas/doctor/:codigoEmpleado/mes', citaController.obtenerCitasMesDoctor);
 router.get('/citas/doctor/:codigoEmpleado/historial', citaController.obtenerHistorialDoctor);
 router.get('/citas/paciente-historial-diagnosticos', citaController.obtenerConsultasPacienteParaDoctor);

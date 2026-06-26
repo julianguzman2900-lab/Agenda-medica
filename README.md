@@ -1,2 +1,0 @@
-# Agenda-medica
-Repositorio Agenda 

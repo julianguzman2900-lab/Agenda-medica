@@ -39,71 +39,7 @@ const seedDatabase = async () => {
     await usuarioPrueba.save();
     console.log('Paciente de prueba creado (paciente@guzman.com / 123456)');
 
-    // 5. Crear citas de prueba pasadas (completadas con diagnóstico) y futuras (pendientes)
-    // Fechas ficticias relativas a junio de 2026 (por ejemplo, hoy es jueves 25 de junio de 2026)
-    // 22 de junio de 2026 (Lunes), 23 de junio de 2026 (Martes), 29 de junio de 2026 (Lunes)
-    const citas = [
-      {
-        nombrePaciente: 'Santiago Guzmán',
-        edadPaciente: 28,
-        correoPaciente: 'paciente@guzman.com',
-        telefonoPaciente: '3001234567',
-        fecha: '2026-06-22',
-        hora: '09:00',
-        especialidad: 'Dermatología',
-        codigoEmpleadoDoctor: 'DOC003',
-        estado: 'completada',
-        diagnostico: 'Dermatitis leve por contacto. Se receta hidrocortisona en crema al 1% cada 12 horas por 5 días y evitar jabones perfumados.'
-      },
-      {
-        nombrePaciente: 'Santiago Guzmán',
-        edadPaciente: 28,
-        correoPaciente: 'paciente@guzman.com',
-        telefonoPaciente: '3001234567',
-        fecha: '2026-06-23',
-        hora: '11:00',
-        especialidad: 'Cardiología',
-        codigoEmpleadoDoctor: 'DOC002',
-        estado: 'completada',
-        diagnostico: 'Chequeo general de ritmo cardíaco. Electrocardiograma normal. Se recomienda continuar ejercicio moderado y reducir consumo de sodio.'
-      },
-      {
-        nombrePaciente: 'Santiago Guzmán',
-        edadPaciente: 28,
-        correoPaciente: 'paciente@guzman.com',
-        telefonoPaciente: '3001234567',
-        fecha: '2026-06-29',
-        hora: '08:00',
-        especialidad: 'Pediatría',
-        codigoEmpleadoDoctor: 'DOC001',
-        estado: 'pendiente',
-        diagnostico: ''
-      },
-      {
-        nombrePaciente: 'Santiago Guzmán',
-        edadPaciente: 28,
-        correoPaciente: 'paciente@guzman.com',
-        telefonoPaciente: '3001234567',
-        fecha: '2026-06-30',
-        hora: '10:00',
-        especialidad: 'Traumatología',
-        codigoEmpleadoDoctor: 'DOC005',
-        estado: 'pendiente',
-        diagnostico: ''
-      },
-      {
-        nombrePaciente: 'Santiago Guzmán',
-        edadPaciente: 28,
-        correoPaciente: 'paciente@guzman.com',
-        telefonoPaciente: '3001234567',
-        fecha: '2026-07-01',
-        hora: '14:00',
-        especialidad: 'Ginecología',
-        codigoEmpleadoDoctor: 'DOC004',
-        estado: 'pendiente',
-        diagnostico: ''
-      }
-    ];
+   
 
     await Cita.insertMany(citas);
     console.log('Citas de prueba creadas exitosamente.');
